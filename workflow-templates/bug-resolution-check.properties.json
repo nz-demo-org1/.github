@@ -1,0 +1,13 @@
+{
+  "name": "Bug Resolution Enforcement",
+  "description": "Prevents closing bug issues without a Resolution field by automatically reopening and commenting.",
+  "iconName": "issue-opened",
+  "categories": [
+    "Automation",
+    "Testing"
+  ],
+  "filePatterns": [
+    "^\.github/ISSUE_TEMPLATE/.*\\.ya?ml$",
+    "^\.github/ISSUE_TEMPLATE/config\\.yml$"
+  ]
+}
