@@ -1,0 +1,55 @@
+name: Bug Resolution Enforcement
+
+on:
+  issues:
+    types: [closed, edited]
+
+jobs:
+  check-bug-resolution:
+    runs-on: ubuntu-latest
+    if: github.event.issue.labels.*.name contains 'bug'
+    steps:
+      - name: Check if bug has resolution set
+        id: check-resolution
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+            
+            // Check if Resolution field is set in the issue body
+            // This pattern looks for a field labeled "Resolution" with a non-empty value
+            const resolutionPattern = /^Resolution:\s*(.+?)(?:\n|$)/im;
+            const resolutionMatch = body.match(resolutionPattern);
+            const hasResolution = resolutionMatch && resolutionMatch[1]?.trim() !== '';
+            
+            // Optionally, also check custom fields if using GitHub issue forms
+            // Uncomment the line below if your bug template uses YAML front matter
+            // const hasCustomResolution = body.includes('resolution:') && !body.match(/resolution:\s*$/im);
+            
+            console.log(`Issue #${issue.number} - Resolution field set: ${hasResolution}`);
+            console.log(`Issue state: ${issue.state}`);
+            
+            core.setOutput('has-resolution', hasResolution);
+
+      - name: Revert to In Progress if resolution missing
+        if: github.event.issue.state == 'closed' && steps.check-resolution.outputs.has-resolution == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'open',
+              state_reason: 'reopened'
+            });
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '⚠️ Bug cannot be closed without a **Resolution** field. This issue has been automatically reopened. Please set the Resolution field and try closing again.'
+            });
+            
+            core.notice(`Issue #${context.issue.number} reopened due to missing Resolution field`);
