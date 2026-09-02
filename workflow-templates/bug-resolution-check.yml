@@ -7,7 +7,7 @@ on:
 jobs:
   check-bug-resolution:
     runs-on: ubuntu-latest
-    permissons:
+    permissions:
       issues: write
       
     if: github.event.issue.type.name == 'Bug'
