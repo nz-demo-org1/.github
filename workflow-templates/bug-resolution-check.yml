@@ -21,7 +21,7 @@ jobs:
             // This pattern looks for a field labeled "Resolution" with a non-empty value
             const resolutionPattern = /^Resolution:\s*(.+?)(?:\n|$)/im;
             const resolutionMatch = body.match(resolutionPattern);
-            const hasResolution = resolutionMatch && resolutionMatch[1]?.trim() !== '';
+            const hasResolution = !!(resolutionMatch?.[1] && resolutionMatch[1].trim() !== '');
             
             // Optionally, also check custom fields if using GitHub issue forms
             // Uncomment the line below if your bug template uses YAML front matter
@@ -30,7 +30,7 @@ jobs:
             console.log(`Issue #${issue.number} - Resolution field set: ${hasResolution}`);
             console.log(`Issue state: ${issue.state}`);
             
-            core.setOutput('has-resolution', hasResolution);
+            core.setOutput('has-resolution', String(hasResolution));
 
       - name: Revert to In Progress if resolution missing
         if: github.event.issue.state == 'closed' && steps.check-resolution.outputs.has-resolution == 'false'
