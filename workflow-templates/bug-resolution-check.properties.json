@@ -5,9 +5,5 @@
   "categories": [
     "Automation",
     "Testing"
-  ],
-  "filePatterns": [
-    "^\.github/ISSUE_TEMPLATE/.*\\.ya?ml$",
-    "^\.github/ISSUE_TEMPLATE/config\\.yml$"
   ]
 }
