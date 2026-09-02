@@ -7,7 +7,7 @@ on:
 jobs:
   check-bug-resolution:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'bug')
+    if: github.event.issue.type.name == 'Bug'
     steps:
       - name: Check if bug has resolution set
         id: check-resolution
