@@ -2,12 +2,12 @@ name: Bug Resolution Enforcement
 
 on:
   issues:
-    types: [closed, edited]
+    types: [closed]
 
 jobs:
   check-bug-resolution:
     runs-on: ubuntu-latest
-    if: github.event.issue.labels.*.name contains 'bug'
+    if: contains(github.event.issue.labels.*.name, 'bug')
     steps:
       - name: Check if bug has resolution set
         id: check-resolution
